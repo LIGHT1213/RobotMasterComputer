@@ -10,6 +10,7 @@ class MainGUI:
         MainGUI.ui = uic.loadUi("UserUI/RobotUI.ui")
         MainGUI.ui.ReFlashUart.clicked.connect(MainGUI.ReFlashUart)
         MainGUI.ui.OpenUart.clicked.connect(MainGUI.OpenSerial)
+        MainGUI.ui.UartSendButtom.clicked.connect(MainGUI.SendMessage)
     def ReFlashUart(self):
         global PortList
         MainGUI.ui.UartList.clear()
@@ -18,7 +19,7 @@ class MainGUI:
             MainGUI.ui.UartList.addItem(i[1])
             
     def OpenSerial(self):
-        global PortList
+        global PortList,SlaveSer
         for i in list(PortList):
             if MainGUI.ui.UartList.currentText() == i[1] :
                 try:
@@ -26,5 +27,11 @@ class MainGUI:
                     #SlaveSer=serial.Serial("/dev/ttyACM0",115200,timeout=60)
                 except Exception:
                     print("发生了什么错误qaq")
-                break
-        SlaveSer.write("123456".encode('utf-8'))
+                if SlaveSer.isOpen() :
+                    MainGUI.ui.UartStates.setText(i[1]+"已经打开")
+                else :
+                    MainGUI.ui.UartStates.setText(i[1]+"未打开")
+        #SlaveSer.write("123456".encode('utf-8'))
+    def SendMessage(self):
+        global SlaveSer
+        SlaveSer.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))

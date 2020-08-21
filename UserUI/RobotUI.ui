@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>串口接受区</string>
+    <string>串口接收区</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -122,6 +122,19 @@
    </property>
    <property name="text">
     <string>打开串口</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="UartStates">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>200</y>
+     <width>461</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

@@ -62,7 +62,7 @@
   <widget class="QPushButton" name="UartSendButtom">
    <property name="geometry">
     <rect>
-     <x>340</x>
+     <x>410</x>
      <y>170</y>
      <width>89</width>
      <height>25</height>
@@ -81,6 +81,9 @@
      <height>25</height>
     </rect>
    </property>
+   <property name="editable">
+    <bool>false</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
@@ -93,6 +96,32 @@
    </property>
    <property name="text">
     <string>串口</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ReFlashUart">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>170</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>刷新串口</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="OpenUart">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>170</y>
+     <width>89</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>打开串口</string>
    </property>
   </widget>
  </widget>

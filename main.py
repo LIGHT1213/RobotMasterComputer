@@ -4,5 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from UserGUI import MainGUI
 RobotUI = QApplication([])
 GUI=MainGUI()
+GUI.UartRecBegin()
 GUI.ui.show()
+
 RobotUI.exec_()

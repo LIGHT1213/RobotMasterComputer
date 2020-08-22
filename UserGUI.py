@@ -12,6 +12,9 @@ class MySignals(QObject):
     UartPrintStr = pyqtSignal(str)
 class MainGUI:
     def __init__(self):
+        super(MainGUI, self).__init__()
+        MainGUI.ser = serial.Serial()
+
         # 从文件中加载UI定义
         MainGUI.ui = uic.loadUi("UserUI/RobotUI.ui")
         MainGUI.ui.ReFlashUart.clicked.connect(MainGUI.ReFlashUart)
@@ -20,6 +23,9 @@ class MainGUI:
 
         MainGUI.UartPrint=MySignals()
         MainGUI.UartPrint.UartPrintStr.connect(MainGUI.UartPrintGUI)
+    def init(self):
+        MainGUI.timer = QTimer(self)
+        MainGUI.timer.timeout.connect(self.data_receive)
     def ReFlashUart(self):
         global PortList
         MainGUI.ui.UartList.clear()
@@ -27,49 +33,51 @@ class MainGUI:
         for i in list(PortList) :
             MainGUI.ui.UartList.addItem(i[1])
     def UartPrintGUI(self,text):
-        MainGUI.ui.UartRec.append=(str(text))        
+        MainGUI.ui.UartRec.append(str(text))        
     def OpenSerial(self):
-        global PortList,SlaveSer,OpenSerSingal
+        global PortList,OpenSerSingal
         if  OpenSerSingal==0 :
-            for i in list(PortList):
+            for i in list(serial.tools.list_ports.comports()):
                 if MainGUI.ui.UartList.currentText() == i[1] :
+                    MainGUI.ser.baudrate=115200
+                    MainGUI.ser.port=i[0]
+                    
                     try:
-                        SlaveSer=serial.Serial(i[0],115200,timeout=60)
+                        MainGUI.ser.open()
+                        #self.ser=serial.Serial(i[0],115200,timeout=60)
                         #SlaveSer=serial.Serial("/dev/ttyACM0",115200,timeout=60)
                     except Exception:
                         print("发生了什么错误qaq")
-                    if SlaveSer.isOpen() :
+                    if MainGUI.ser.isOpen() :
                         MainGUI.ui.UartStates.setText(i[1]+"已经打开")
                         OpenSerSingal=1
                     else :
                         MainGUI.ui.UartStates.setText(i[1]+"未打开")
                         OpenSerSingal=0
-        return SlaveSer
         #SlaveSer.write("123456".encode('utf-8'))
     def UartRecBegin(self):
         global lock
-        def Run(self):
-            global lock
-            ser=self.OpenSerial()
-            while True:
-                lock.acquire()
-                if ser.isOpen():
-                    count = ser.inWaiting()
-                    if count!=0:
-                        UartStr=ser.read(count)
-                    else :
-                        print("串口没开")
-                    self.UartPrint.UartPrintStr.emit(UartStr)
-                    SlaveSer.flushInput()
-                lock.release()
-        thread = Thread(target = self.Run)
+        thread = Thread(target = MainGUI.Run)
         lock = Lock()
         thread.start()
-
+    def Run():
+        global lock
+        while True:
+            #lock.acquire()
+            if MainGUI.ser.isOpen():
+                count = MainGUI.ser.inWaiting()
+                if count!=0:
+                    UartStr=MainGUI.ser.read(count)
+                    #MainGUI.UartPrint.UartPrintStr.emit(UartStr.decode('utf-8'))
+                    MainGUI.ui.UartRec.append(UartStr.decode('iso-8859-1')) 
+                else :
+                    pass
+                
+                MainGUI.ser.flushInput()
+            #lock.release()
 
     def SendMessage(self):
-        global SlaveSer
-        SlaveSer.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))
+        MainGUI.ser.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))
 """ class UartRecThread(QThread):
     _single=pyqtSignal(str)
     def __init__(self,ser):

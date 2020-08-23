@@ -153,37 +153,11 @@
     <string>清除接收区</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>100</x>
-     <y>220</y>
-     <width>55</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>原始图像</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5">
-   <property name="geometry">
-    <rect>
-     <x>380</x>
-     <y>220</y>
-     <width>55</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>灰度图</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="OpenCamera">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>450</y>
+     <x>20</x>
+     <y>220</y>
      <width>80</width>
      <height>26</height>
     </rect>
@@ -192,30 +166,14 @@
     <string>打开摄像头</string>
    </property>
   </widget>
-  <widget class="QLabel" name="RgbLabel">
+  <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>150</x>
      <y>240</y>
-     <width>241</width>
-     <height>181</height>
+     <width>256</width>
+     <height>192</height>
     </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="GrayLabel">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>240</y>
-     <width>241</width>
-     <height>181</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
  </widget>

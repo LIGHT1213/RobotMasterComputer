@@ -39,9 +39,11 @@ class MainGUI:
         MainGUI.ui.ClearButtom.clicked.connect(MainGUI.ClearButtom)
         MainGUI.ui.OpenCamera.clicked.connect(MainGUI.OpenCameraProcess)
     def OpenCameraProcess(self):
+        RgbGUI=RgbViewGUI()
+        RgbGUI.ui.show()
         MainGUI.cap=cv2.VideoCapture(0)
-        MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,241)#设置图像宽度
-        MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,181)#设置图像高度
+        # MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1920)#设置图像宽度
+        # MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,1080)#设置图像高度
         def UpdateImageShowThread():
             while True:
                 ret,flame=MainGUI.cap.read()
@@ -50,7 +52,8 @@ class MainGUI:
                     heigt, width = CurFlame.shape[:2]
                     pixmap = QImage(CurFlame, width, heigt, QImage.Format_RGB888)
                     pixmap = QPixmap.fromImage(pixmap)
-                    MainGUI.ui.RgbLabel.setPixmap(pixmap)
+                    RgbGUI.ui.RgbView.setPixmap(pixmap)
+                time.sleep(0.03)
         GuiThread = Thread(target = UpdateImageShowThread)
         GuiThread.start()
 
@@ -126,3 +129,11 @@ class MainGUI:
 
     def SendMessage(self):
         MainGUI.ser.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))
+class RgbViewGUI:
+     def __init__(self):
+        #super(MainGUI, self).__init__()
+        
+        #RgbGUI.ser = serial.Serial()
+        #RgbGUI.init(self)
+        # 从文件中加载UI定义
+        RgbViewGUI.ui = uic.loadUi("UserUI/RgbView.ui")

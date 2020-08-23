@@ -4,6 +4,7 @@ import time
 # 系统包
 from PyQt5 import uic
 from PyQt5.QtCore import *
+from PyQt5.QtGui import QImage,QPixmap
 # pyqt5 部分
 import serial
 import serial.tools.list_ports
@@ -27,6 +28,7 @@ def GetPitcureNum(PictureNum):
 class MainGUI:
     def __init__(self):
         super(MainGUI, self).__init__()
+        
         MainGUI.ser = serial.Serial()
         MainGUI.init(self)
         # 从文件中加载UI定义
@@ -35,18 +37,20 @@ class MainGUI:
         MainGUI.ui.OpenUart.clicked.connect(MainGUI.OpenSerial)
         MainGUI.ui.UartSendButtom.clicked.connect(MainGUI.SendMessage)
         MainGUI.ui.ClearButtom.clicked.connect(MainGUI.ClearButtom)
-        MainGUI.ui.OpenCamera.clicked.connect(MainGUI.OpenCamera)
-    def OpenCamera(self):
-        CapPicture1=cv2.VideoCapture(1)
+        MainGUI.ui.OpenCamera.clicked.connect(MainGUI.OpenCameraProcess)
+    def OpenCameraProcess(self):
+        MainGUI.cap=cv2.VideoCapture(0)
+        MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,241)#设置图像宽度
+        MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,181)#设置图像高度
         def UpdateImageShowThread():
-            global CapPicture1
-            ret,flame=CapPicture1.read()
-            if ret :
-                CurFlame = cv2.cvtColor(flame, cv2.COLOR_BGR2RGB)
-                heigt, width = CurFlame.shape[:2]
-                pixmap = QImage(CurFlame, width, heigt, QImage.Format_RGB888)
-                pixmap = QPixmap.fromImage(pixmap)
-                MainGUI.RgbLabel.setPixmap(pixmap)
+            while True:
+                ret,flame=MainGUI.cap.read()
+                if ret :
+                    CurFlame = cv2.cvtColor(flame, cv2.COLOR_BGR2RGB)
+                    heigt, width = CurFlame.shape[:2]
+                    pixmap = QImage(CurFlame, width, heigt, QImage.Format_RGB888)
+                    pixmap = QPixmap.fromImage(pixmap)
+                    MainGUI.ui.RgbLabel.setPixmap(pixmap)
         GuiThread = Thread(target = UpdateImageShowThread)
         GuiThread.start()
 

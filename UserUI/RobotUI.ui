@@ -179,7 +179,7 @@
     <string>灰度图</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="OpenCarmera">
+  <widget class="QPushButton" name="OpenCamera">
    <property name="geometry">
     <rect>
      <x>80</x>

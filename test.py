@@ -1,45 +1,23 @@
-from PySide2.QtWidgets import QApplication, QTextBrowser
-from PySide2.QtUiTools import QUiLoader
-from threading import Thread
-
-from PySide2.QtCore import Signal,QObject
-
-# 自定义信号源对象类型，一定要继承自 QObject
-class MySignals(QObject):
-    # 定义一种信号，两个参数 类型分别是： QTextBrowser 和 字符串
-    text_print = Signal(QTextBrowser,str)
-    # 还可以定义其他信号
-    update_table = Signal(str)
-    
-
-class Stats:
-
-    def __init__(self):
-        self.ui = QUiLoader().load('main.ui')
-
-        # 实例化
-        self.ms = MySignals()
-
-        # 自定义信号的处理函数
-        self.ms.text_print.connect(self.printToGui)
-
-
-    def printToGui(self,fb,text):
-        fb.append(str(text))
-        fb.ensureCursorVisible()
-
-    def task1(self):
-        def threadFunc():
-            # 通过Signal 的 emit 触发执行 主线程里面的处理函数
-            # emit参数和定义Signal的数量、类型必须一致
-            self.ms.text_print.emit(self.ui.infoBox1, '输出内容')
-        
-        thread = Thread(target = threadFunc )
-        thread.start()
-
-    def task2(self):
-        def threadFunc():
-            self.ms.text_print.emit(self.ui.infoBox2, '输出内容')
-
-        thread = Thread(target=threadFunc)
-        thread.start()
+import cv2
+cap=cv2.VideoCapture(0) #调用摄像头‘0'一般是打开电脑自带摄像头，‘1'是打开外部摄像头（只有一个摄像头的情况）
+width=2592
+height=1944
+#2592 x 1944
+cap.set(cv2.CAP_PROP_FRAME_WIDTH,width)#设置图像宽度
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT,height)#设置图像高度
+#显示图像
+while True: 
+  ret,frame=cap.read()#读取图像(frame就是读取的视频帧，对frame处理就是对整个视频的处理)
+  #print(ret)#
+  #######例如将图像灰度化处理，
+  img=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)#转灰度图
+  #cv2.imshow("img",img)
+  ########图像不处理的情况
+  cv2.imshow("frame",frame)  
+ 
+  input=cv2.waitKey(20)
+  if input==ord('q'):#如过输入的是q就break，结束图像显示，鼠标点击视频画面输入字符
+    break
+  
+cap.release()#释放摄像头
+cv2.destroyAllWindows()#销毁窗口

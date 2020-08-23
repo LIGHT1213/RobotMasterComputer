@@ -1,13 +1,29 @@
 import sys
-from PyQt5 import uic
-import serial
-import serial.tools.list_ports
 from threading import Thread,Lock
 import time
+# 系统包
+from PyQt5 import uic
 from PyQt5.QtCore import *
+# pyqt5 部分
+import serial
+import serial.tools.list_ports
+# 串口部分
+import cv2
+# opencv部分
 OpenSerSingal=0
 UartStr=""
 RecFlag=0
+CapPicture1=""
+CapPicture2=""
+#全局变量
+def GetPitcureNum(PictureNum):
+    if PictureNum==1:
+        return CapPicture1
+    elif PictureNum==2:
+        return CapPicture2
+    else:
+        pass
+        
 class MainGUI:
     def __init__(self):
         super(MainGUI, self).__init__()
@@ -19,7 +35,22 @@ class MainGUI:
         MainGUI.ui.OpenUart.clicked.connect(MainGUI.OpenSerial)
         MainGUI.ui.UartSendButtom.clicked.connect(MainGUI.SendMessage)
         MainGUI.ui.ClearButtom.clicked.connect(MainGUI.ClearButtom)
+        MainGUI.ui.OpenCamera.clicked.connect(MainGUI.OpenCamera)
+    def OpenCamera(self):
+        CapPicture1=cv2.VideoCapture(1)
+        def UpdateImageShowThread():
+            global CapPicture1
+            ret,flame=CapPicture1.read()
+            if ret :
+                CurFlame = cv2.cvtColor(flame, cv2.COLOR_BGR2RGB)
+                heigt, width = CurFlame.shape[:2]
+                pixmap = QImage(CurFlame, width, heigt, QImage.Format_RGB888)
+                pixmap = QPixmap.fromImage(pixmap)
+                MainGUI.RgbLabel.setPixmap(pixmap)
+        GuiThread = Thread(target = UpdateImageShowThread)
+        GuiThread.start()
 
+#    def GetPitcure(self):
 
     def ClearButtom(self):
         MainGUI.ui.UartRec.clear()
@@ -27,6 +58,7 @@ class MainGUI:
         self.timer = QTimer()
         self.timer.timeout.connect(self.ReFlashRec)
         self.timer.start(100)
+        #接收gui处理定时器
     def ReFlashRec(self):
         global lock
         global UartStr,RecFlag

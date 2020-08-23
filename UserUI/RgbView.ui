@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RgbViewWindows</class>
- <widget class="QWidget" name="RgbViewWindows">
+ <class>ImageWindows</class>
+ <widget class="QWidget" name="ImageWindows">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2000</width>
-    <height>1100</height>
+    <width>1300</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>图像显示</string>
   </property>
   <widget class="QLabel" name="RgbView">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1920</width>
-     <height>1080</height>
+     <x>10</x>
+     <y>60</y>
+     <width>640</width>
+     <height>480</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="GrayView">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>60</y>
+     <width>640</width>
+     <height>480</height>
     </rect>
    </property>
    <property name="text">

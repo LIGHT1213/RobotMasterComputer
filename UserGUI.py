@@ -42,17 +42,26 @@ class MainGUI:
         RgbGUI=RgbViewGUI()
         RgbGUI.ui.show()
         MainGUI.cap=cv2.VideoCapture(0)
-        # MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,1920)#设置图像宽度
-        # MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,1080)#设置图像高度
+        MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,640)#设置图像宽度
+        MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,480)#设置图像高度
         def UpdateImageShowThread():
             while True:
-                ret,flame=MainGUI.cap.read()
-                if ret :
-                    CurFlame = cv2.cvtColor(flame, cv2.COLOR_BGR2RGB)
-                    heigt, width = CurFlame.shape[:2]
-                    pixmap = QImage(CurFlame, width, heigt, QImage.Format_RGB888)
-                    pixmap = QPixmap.fromImage(pixmap)
-                    RgbGUI.ui.RgbView.setPixmap(pixmap)
+                RgbRet,Rgbflame=MainGUI.cap.read()
+                GrayRet,Grayflame=MainGUI.cap.read()
+                if RgbRet :
+                    RgbCurFlame = cv2.cvtColor(Rgbflame, cv2.COLOR_BGR2RGB)
+                    heigt, width = RgbCurFlame.shape[:2]
+                    RgbPic = QImage(RgbCurFlame, width, heigt, QImage.Format_RGB888)
+                    RgbPic = QPixmap.fromImage(RgbPic)
+                    RgbGUI.ui.RgbView.setPixmap(RgbPic)
+                    #原始显示
+                if GrayRet:
+                    GrayCurFlame=cv2.cvtColor(Grayflame,cv2.COLOR_BGR2GRAY)
+                    GrayFlame=cv2.cvtColor(GrayCurFlame,cv2.COLOR_GRAY2RGB)
+                    heigt, width = GrayFlame.shape[:2]
+                    GrayPic = QImage(GrayFlame, width, heigt, QImage.Format_RGB888)
+                    GrayPic = QPixmap.fromImage(GrayPic)
+                    RgbGUI.ui.GrayView.setPixmap(GrayPic)
                 time.sleep(0.03)
         GuiThread = Thread(target = UpdateImageShowThread)
         GuiThread.start()

@@ -205,7 +205,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="label_7">
+  <widget class="QLabel" name="GrayLabel">
    <property name="geometry">
     <rect>
      <x>270</x>

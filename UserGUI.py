@@ -8,13 +8,18 @@ from threading import Thread,Lock
 import time
 from PyQt5.QtCore import *
 OpenSerSingal=0
+UartStr=""
+RecFlag=0
 class MySignals(QObject):
     UartPrintStr = pyqtSignal(str)
 class MainGUI:
     def __init__(self):
         super(MainGUI, self).__init__()
         MainGUI.ser = serial.Serial()
-
+        MainGUI.init(self)
+        # MainGUI.timer = QTimer(MainGUI)
+        # MainGUI.timer.timeout.connect(MainGUI.ReFlashRec)
+        # MainGUI.timer.start(2)
         # 从文件中加载UI定义
         MainGUI.ui = uic.loadUi("UserUI/RobotUI.ui")
         MainGUI.ui.ReFlashUart.clicked.connect(MainGUI.ReFlashUart)
@@ -23,9 +28,18 @@ class MainGUI:
 
         MainGUI.UartPrint=MySignals()
         MainGUI.UartPrint.UartPrintStr.connect(MainGUI.UartPrintGUI)
+
+        
     def init(self):
-        MainGUI.timer = QTimer(self)
-        MainGUI.timer.timeout.connect(self.data_receive)
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.ReFlashRec)
+        self.timer.start(2)
+    def ReFlashRec(self):
+        global lock
+        global UartStr,RecFlag
+        if RecFlag==1:
+            MainGUI.ui.UartRec.append(str(UartStr))
+            RecFlag=0
     def ReFlashUart(self):
         global PortList
         MainGUI.ui.UartList.clear()
@@ -62,18 +76,23 @@ class MainGUI:
         thread.start()
     def Run():
         global lock
+        global UartStr,RecFlag
         while True:
             #lock.acquire()
             if MainGUI.ser.isOpen():
                 count = MainGUI.ser.inWaiting()
                 if count!=0:
                     UartStr=MainGUI.ser.read(count)
-                    #MainGUI.UartPrint.UartPrintStr.emit(UartStr.decode('utf-8'))
-                    MainGUI.ui.UartRec.append(UartStr.decode('iso-8859-1')) 
+                    UartStr=UartStr.decode('iso-8859-1')
+                    RecFlag=1
+
+                    #MainGUI.UartPrint.UartPrintStr.emit(UartStr)
+                    #MainGUI.ui.UartRec.append(UartStr) 
+                    MainGUI.ser.flushInput()
                 else :
                     pass
                 
-                MainGUI.ser.flushInput()
+                
             #lock.release()
 
     def SendMessage(self):

@@ -16,7 +16,7 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>20</x>
      <y>10</y>
      <width>81</width>
      <height>17</height>
@@ -60,6 +60,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="UartSendButtom">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -135,6 +138,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ClearButtom">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>10</y>
+     <width>80</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>清除接收区</string>
    </property>
   </widget>
  </widget>

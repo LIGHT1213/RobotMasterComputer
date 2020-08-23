@@ -3,37 +3,30 @@ from PyQt5 import uic
 import serial
 import serial.tools.list_ports
 from threading import Thread,Lock
-#from PySide2.QtCore import Signal,QObject
-#from PyQt5.QtCore import QObject
 import time
 from PyQt5.QtCore import *
 OpenSerSingal=0
 UartStr=""
 RecFlag=0
-class MySignals(QObject):
-    UartPrintStr = pyqtSignal(str)
 class MainGUI:
     def __init__(self):
         super(MainGUI, self).__init__()
         MainGUI.ser = serial.Serial()
         MainGUI.init(self)
-        # MainGUI.timer = QTimer(MainGUI)
-        # MainGUI.timer.timeout.connect(MainGUI.ReFlashRec)
-        # MainGUI.timer.start(2)
         # 从文件中加载UI定义
         MainGUI.ui = uic.loadUi("UserUI/RobotUI.ui")
         MainGUI.ui.ReFlashUart.clicked.connect(MainGUI.ReFlashUart)
         MainGUI.ui.OpenUart.clicked.connect(MainGUI.OpenSerial)
         MainGUI.ui.UartSendButtom.clicked.connect(MainGUI.SendMessage)
+        MainGUI.ui.ClearButtom.clicked.connect(MainGUI.ClearButtom)
 
-        MainGUI.UartPrint=MySignals()
-        MainGUI.UartPrint.UartPrintStr.connect(MainGUI.UartPrintGUI)
 
-        
+    def ClearButtom(self):
+        MainGUI.ui.UartRec.clear()
     def init(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.ReFlashRec)
-        self.timer.start(2)
+        self.timer.start(100)
     def ReFlashRec(self):
         global lock
         global UartStr,RecFlag
@@ -58,17 +51,16 @@ class MainGUI:
                     
                     try:
                         MainGUI.ser.open()
-                        #self.ser=serial.Serial(i[0],115200,timeout=60)
-                        #SlaveSer=serial.Serial("/dev/ttyACM0",115200,timeout=60)
                     except Exception:
                         print("发生了什么错误qaq")
                     if MainGUI.ser.isOpen() :
                         MainGUI.ui.UartStates.setText(i[1]+"已经打开")
+                        MainGUI.ui.UartSendButtom.setEnabled(True)
+                        MainGUI.ui.OpenUart.setEnabled(False)
                         OpenSerSingal=1
                     else :
                         MainGUI.ui.UartStates.setText(i[1]+"未打开")
                         OpenSerSingal=0
-        #SlaveSer.write("123456".encode('utf-8'))
     def UartRecBegin(self):
         global lock
         thread = Thread(target = MainGUI.Run)
@@ -78,7 +70,8 @@ class MainGUI:
         global lock
         global UartStr,RecFlag
         while True:
-            #lock.acquire()
+            lock.acquire()
+            time.sleep(0.1)
             if MainGUI.ser.isOpen():
                 count = MainGUI.ser.inWaiting()
                 if count!=0:
@@ -93,24 +86,7 @@ class MainGUI:
                     pass
                 
                 
-            #lock.release()
+            lock.release()
 
     def SendMessage(self):
         MainGUI.ser.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))
-""" class UartRecThread(QThread):
-    _single=pyqtSignal(str)
-    def __init__(self,ser):
-        super(MyThread,self).__init__()
-        self.ser=SlaveSer
- 
-    def run(self):
-        while True:
-            try:
-                while self.ser!=None and self.ser.is_open==True:
-                    count=self.ser.in_waiting
-                    if count>0:
-                        UartStr=self.ser.read(count)
-                        self.UartPrint.UartPrintStr.emit(UartStr)
-                        self.ser.flushInput()
-            except:
-                pass """

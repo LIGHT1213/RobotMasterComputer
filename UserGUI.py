@@ -95,18 +95,21 @@ class MainGUI:
                 if GrayCapFlag==1:
                     #ImageLock.acquire()
                     #thresh = cv2.adaptiveThreshold(CapPicture1,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,5)
-                    ret, thresh = cv2.threshold(CapPicture1, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                    blur = cv2.GaussianBlur(CapPicture1, (5, 5), 0)
+                    ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                     ThreshShow = QImage(thresh.data,thresh.shape[1],thresh.shape[0],QImage.Format_Grayscale8)
                     ProcessShow.ui.Binarization.setPixmap(QPixmap.fromImage(ThreshShow))
                     #RgbGUI.ui.GrayView.setPixmap(QPixmap.fromImage(ThreshShow))
 
-                    image= cv2.findContours ( thresh , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
-                    #cv2.drawContours(image, contours, -1, (0, 0, 255), 2, 8)
+                    
+                    image ,contor,hes= cv2.findContours ( thresh , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
+                    #h=image[0]
+                    cv2.drawContours(CapPicture2, contor, -1, (0, 0, 255), 3)
                     #cv2.putText(CapPicture2, "{:.3f}".format(len ( contours )), (30, 30),cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 1)
                     
-                    # GrayCount = QImage(image, 640, 480, QImage.Format_Grayscale8)
-                    # GrayCount = QPixmap.fromImage(GrayCount)
-                    # ProcessShow.ui.Countour.setPixmap(GrayCount)
+                    GrayCount = QImage(CapPicture2, CapPicture2.shape[1], CapPicture2.shape[0], QImage.Format_RGB888)
+                    GrayCount = QPixmap.fromImage(GrayCount)
+                    ProcessShow.ui.Countour.setPixmap(GrayCount)
                     #RgbGUI.ui.GrayView.setPixmap(GrayCount)
                     GrayCapFlag=0
                     #ImageLock.release()

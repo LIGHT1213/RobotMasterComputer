@@ -39,6 +39,32 @@
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>221</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>注意打开后会消耗额外性能</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="GrayShowEnable">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>191</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>是否打开灰度显示</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

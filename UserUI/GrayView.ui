@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GrayViewWINDOWS</class>
- <widget class="QWidget" name="GrayViewWINDOWS">
+ <class>ProcessView</class>
+ <widget class="QWidget" name="ProcessView">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>2000</width>
-    <height>1100</height>
+    <width>1300</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="GrayView">
+  <widget class="QLabel" name="Binarization">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1920</width>
-     <height>1080</height>
+     <x>10</x>
+     <y>60</y>
+     <width>640</width>
+     <height>480</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Countour">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>60</y>
+     <width>640</width>
+     <height>480</height>
     </rect>
    </property>
    <property name="text">

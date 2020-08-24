@@ -1,5 +1,6 @@
 import sys
 from threading import Thread,Lock
+import multiprocessing 
 import time
 # 系统包
 from PyQt5 import uic
@@ -11,11 +12,18 @@ import serial.tools.list_ports
 # 串口部分
 import cv2
 # opencv部分
+
+
+
 OpenSerSingal=0
 UartStr=""
+#不太会用python的list传参数，先用全局flag代替了
+GrayCapFlag=0
 RecFlag=0
+
 CapPicture1=""
 CapPicture2=""
+
 #全局变量
 def GetPitcureNum(PictureNum):
     if PictureNum==1:
@@ -39,31 +47,72 @@ class MainGUI:
         MainGUI.ui.ClearButtom.clicked.connect(MainGUI.ClearButtom)
         MainGUI.ui.OpenCamera.clicked.connect(MainGUI.OpenCameraProcess)
     def OpenCameraProcess(self):
+        global CapPicture1
         RgbGUI=RgbViewGUI()
+        ProcessShow=ProcessView()
+        ImageLock=Lock()
         RgbGUI.ui.show()
+        ProcessShow.ui.show()
         MainGUI.cap=cv2.VideoCapture(0)
         MainGUI.cap.set(cv2.CAP_PROP_FRAME_WIDTH,640)#设置图像宽度
         MainGUI.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,480)#设置图像高度
         def UpdateImageShowThread():
+            global CapPicture1,CapPicture2,GrayCapFlag
             while True:
-                RgbRet,Rgbflame=MainGUI.cap.read()
-                GrayRet,Grayflame=MainGUI.cap.read()
+                
+                RgbRet,MainGUI.Rgbflame=MainGUI.cap.read()
+                GrayRet,MainGUI.Grayflame=MainGUI.cap.read()
                 if RgbRet :
-                    RgbCurFlame = cv2.cvtColor(Rgbflame, cv2.COLOR_BGR2RGB)
+                    ImageLock.acquire()
+                    CapPicture2=MainGUI.Rgbflame
+                    RgbCurFlame = cv2.cvtColor(MainGUI.Rgbflame, cv2.COLOR_BGR2RGB)
                     heigt, width = RgbCurFlame.shape[:2]
                     RgbPic = QImage(RgbCurFlame, width, heigt, QImage.Format_RGB888)
                     RgbPic = QPixmap.fromImage(RgbPic)
                     RgbGUI.ui.RgbView.setPixmap(RgbPic)
+                    ImageLock.release()
                     #原始显示
                 if GrayRet:
-                    GrayCurFlame=cv2.cvtColor(Grayflame,cv2.COLOR_BGR2GRAY)
-                    GrayFlame=cv2.cvtColor(GrayCurFlame,cv2.COLOR_GRAY2RGB)
-                    heigt, width = GrayFlame.shape[:2]
-                    GrayPic = QImage(GrayFlame, width, heigt, QImage.Format_RGB888)
-                    GrayPic = QPixmap.fromImage(GrayPic)
-                    RgbGUI.ui.GrayView.setPixmap(GrayPic)
+                    ImageLock.acquire()
+                    MainGUI.GrayCurFlame=cv2.cvtColor(MainGUI.Grayflame,cv2.COLOR_BGR2GRAY)
+                    CapPicture1=MainGUI.GrayCurFlame
+                    GrayCapFlag=1
+                    if RgbGUI.ui.GrayShowEnable.isChecked():
+                        GrayFlame=cv2.cvtColor(MainGUI.GrayCurFlame,cv2.COLOR_GRAY2RGB)
+                        heigt, width = GrayFlame.shape[:2]
+                        GrayPic = QImage(GrayFlame, width, heigt, QImage.Format_RGB888)
+                        GrayPic = QPixmap.fromImage(GrayPic)
+                        RgbGUI.ui.GrayView.setPixmap(GrayPic)
+                    ImageLock.release()
                 time.sleep(0.03)
+                
+        def ImageFindContour():
+            global GrayCapFlag,CapPicture1,CapPicture2
+            
+            
+            while True:
+                if GrayCapFlag==1:
+                    ImageLock.acquire()
+                    #thresh = cv2.adaptiveThreshold(CapPicture1,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,5)
+                    ret, thresh = cv2.threshold(CapPicture1, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+                    ThreshShow = QImage(thresh.data,thresh.shape[1],thresh.shape[0],QImage.Format_Grayscale8)
+                    ProcessShow.ui.Binarization.setPixmap(QPixmap.fromImage(ThreshShow))
+                    #RgbGUI.ui.GrayView.setPixmap(QPixmap.fromImage(ThreshShow))
+
+                    image= cv2.findContours ( thresh , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
+                    #cv2.drawContours(image, contours, -1, (0, 0, 255), 2, 8)
+                    #cv2.putText(CapPicture2, "{:.3f}".format(len ( contours )), (30, 30),cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 1)
+                    
+                    GrayCount = QImage(image, 640, 480, QImage.Format_Grayscale8)
+                    GrayCount = QPixmap.fromImage(GrayCount)
+                    ProcessShow.ui.Countour.setPixmap(GrayCount)
+                    #RgbGUI.ui.GrayView.setPixmap(GrayCount)
+                    GrayCapFlag=0
+                    ImageLock.release()
+                time.sleep(0.01)
         GuiThread = Thread(target = UpdateImageShowThread)
+        FindContourThread=Thread(target=ImageFindContour)
+        FindContourThread.start()
         GuiThread.start()
 
 #    def GetPitcure(self):
@@ -140,9 +189,7 @@ class MainGUI:
         MainGUI.ser.write(MainGUI.ui.UartSend.toPlainText().encode('utf-8'))
 class RgbViewGUI:
      def __init__(self):
-        #super(MainGUI, self).__init__()
-        
-        #RgbGUI.ser = serial.Serial()
-        #RgbGUI.init(self)
-        # 从文件中加载UI定义
         RgbViewGUI.ui = uic.loadUi("UserUI/RgbView.ui")
+class ProcessView:
+    def __init__(self):
+        ProcessView.ui= uic.loadUi("UserUI/GrayView.ui")

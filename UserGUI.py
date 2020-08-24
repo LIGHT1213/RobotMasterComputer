@@ -74,9 +74,10 @@ class MainGUI:
                     #原始显示
                 if GrayRet:
                     ImageLock.acquire()
-                    MainGUI.GrayCurFlame=cv2.cvtColor(MainGUI.Grayflame,cv2.COLOR_BGR2GRAY)
-                    CapPicture1=MainGUI.GrayCurFlame
-                    GrayCapFlag=1
+                    if GrayCapFlag==0:
+                        MainGUI.GrayCurFlame=cv2.cvtColor(MainGUI.Grayflame,cv2.COLOR_BGR2GRAY)
+                        CapPicture1=MainGUI.GrayCurFlame
+                        GrayCapFlag=1
                     if RgbGUI.ui.GrayShowEnable.isChecked():
                         GrayFlame=cv2.cvtColor(MainGUI.GrayCurFlame,cv2.COLOR_GRAY2RGB)
                         heigt, width = GrayFlame.shape[:2]
@@ -92,7 +93,7 @@ class MainGUI:
             
             while True:
                 if GrayCapFlag==1:
-                    ImageLock.acquire()
+                    #ImageLock.acquire()
                     #thresh = cv2.adaptiveThreshold(CapPicture1,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,5)
                     ret, thresh = cv2.threshold(CapPicture1, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
                     ThreshShow = QImage(thresh.data,thresh.shape[1],thresh.shape[0],QImage.Format_Grayscale8)
@@ -103,12 +104,12 @@ class MainGUI:
                     #cv2.drawContours(image, contours, -1, (0, 0, 255), 2, 8)
                     #cv2.putText(CapPicture2, "{:.3f}".format(len ( contours )), (30, 30),cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 1)
                     
-                    GrayCount = QImage(image, 640, 480, QImage.Format_Grayscale8)
-                    GrayCount = QPixmap.fromImage(GrayCount)
-                    ProcessShow.ui.Countour.setPixmap(GrayCount)
+                    # GrayCount = QImage(image, 640, 480, QImage.Format_Grayscale8)
+                    # GrayCount = QPixmap.fromImage(GrayCount)
+                    # ProcessShow.ui.Countour.setPixmap(GrayCount)
                     #RgbGUI.ui.GrayView.setPixmap(GrayCount)
                     GrayCapFlag=0
-                    ImageLock.release()
+                    #ImageLock.release()
                 time.sleep(0.01)
         GuiThread = Thread(target = UpdateImageShowThread)
         FindContourThread=Thread(target=ImageFindContour)

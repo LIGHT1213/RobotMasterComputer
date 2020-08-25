@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>处理后图像显示</string>
   </property>
   <widget class="QLabel" name="Binarization">
    <property name="geometry">
@@ -37,6 +37,32 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="ProcessCheck">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>10</y>
+     <width>311</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>显示处理后图像</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>30</y>
+     <width>221</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>注意打开后会消耗额外性能</string>
    </property>
   </widget>
  </widget>

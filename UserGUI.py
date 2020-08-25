@@ -96,7 +96,7 @@ class MainGUI:
                     #ImageLock.acquire()
                     #thresh = cv2.adaptiveThreshold(CapPicture1,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,5)
                     blur = cv2.GaussianBlur(CapPicture1, (5, 5), 0)
-                    ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+                    ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
                     ThreshShow = QImage(thresh.data,thresh.shape[1],thresh.shape[0],QImage.Format_Grayscale8)
                     ProcessShow.ui.Binarization.setPixmap(QPixmap.fromImage(ThreshShow))
                     #RgbGUI.ui.GrayView.setPixmap(QPixmap.fromImage(ThreshShow))

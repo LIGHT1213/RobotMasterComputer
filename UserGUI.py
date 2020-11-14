@@ -90,14 +90,15 @@ class MainGUI:
                 
         def ImageFindContour():
             global GrayCapFlag,CapPicture1,CapPicture2
-            
-            
             while True:
                 if GrayCapFlag==1:
                     #thresh = cv2.adaptiveThreshold(CapPicture1,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,3,5)
                     blur = cv2.GaussianBlur(CapPicture1, (5, 5), 0)
                     ret, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
                     image ,contor,hes= cv2.findContours ( thresh , cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE )
+                    characteristicValue.Conter=contor
+                    characteristicValue.findMaxAreaContor(self)
+                    characteristicValue.findMaxLengthContor(self)
                     if ProcessShow.ui.ProcessCheck.isChecked():
                         ThreshShow = QImage(thresh.data,thresh.shape[1],thresh.shape[0],QImage.Format_Grayscale8)
                         ProcessShow.ui.Binarization.setPixmap(QPixmap.fromImage(ThreshShow))
@@ -190,3 +191,17 @@ class RgbViewGUI:
 class ProcessView:
     def __init__(self):
         ProcessView.ui= uic.loadUi("UserUI/GrayView.ui")
+class characteristicValue:
+    ConterArea=[]
+    ConterLength=[]
+    MaxArea=-1
+    def findMaxAreaContor(self):
+        for i in range(len(characteristicValue.Conter)):
+            characteristicValue.ConterArea.append(cv2.contourArea(characteristicValue.Conter[i]))
+        characteristicValue.MaxArea=max(characteristicValue.ConterArea)  #注意这里我的amd处理器没有支持支持numpy的相关指令集，改在树莓派上运行时请改为numpy
+        MainGUI.ui.ContorArea.setText(str(characteristicValue.MaxArea))
+    def findMaxLengthContor(self):
+        for i in range(len(characteristicValue.Conter)):
+            characteristicValue.ConterLength.append(cv2.arcLength(characteristicValue.Conter[i],True))
+        characteristicValue.MaxLength=max(characteristicValue.ConterLength)
+        MainGUI.ui.ContorLength.setText(str(characteristicValue.MaxLength))
